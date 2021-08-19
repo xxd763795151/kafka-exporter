@@ -1,0 +1,97 @@
+server:
+  port: 9097
+
+spring:
+  application:
+    name: kafka-exporter
+logging:
+  home: ./
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus'
+      base-path: /
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    export:
+      defaults:
+        enabled: true
+    use-global-registry: false
+
+collect:
+  cron:
+    topic: "-"
+    consumer: 0/3 * * * * ?
+
+kafka:
+  boot-server: localhost:9092
+  request-timeout-ms: 3000
+
+
+metrics:
+  excludes:
+    - jvm.gc.max.data.size
+    - jvm.gc.live.data.size
+    - jvm.gc.memory.allocated
+    - jvm.gc.memory.promoted
+    - jvm.buffer.count
+    - jvm.buffer.memory.used
+    - jvm.buffer.total.capacity
+    - jvm.buffer.count
+    - jvm.buffer.memory.used
+    - jvm.buffer.total.capacity
+    - jvm.memory.used
+    - jvm.memory.committed
+    - jvm.memory.max
+    - jvm.memory.used
+    - jvm.memory.committed
+    - jvm.memory.max
+    - jvm.memory.used
+    - jvm.memory.committed
+    - jvm.memory.max
+    - jvm.memory.used
+    - jvm.memory.committed
+    - jvm.memory.max
+    - jvm.memory.used
+    - jvm.memory.committed
+    - jvm.memory.max
+    - jvm.memory.used
+    - jvm.memory.committed
+    - jvm.memory.max
+    - jvm.threads.peak
+    - jvm.threads.daemon
+    - jvm.threads.live
+    - jvm.threads.states
+    - jvm.threads.states
+    - jvm.threads.states
+    - jvm.threads.states
+    - jvm.threads.states
+    - jvm.threads.states
+    - jvm.classes.loaded
+    - jvm.classes.unloaded
+    - logback.events
+    - logback.events
+    - logback.events
+    - logback.events
+    - logback.events
+    - process.uptime
+    - process.start.time
+    - system.cpu.count
+    - system.load.average.1m
+    - system.cpu.usage
+    - process.cpu.usage
+    - process.files.open
+    - process.files.max
+    - tomcat.sessions.active.max
+    - tomcat.sessions.active.current
+    - tomcat.sessions.created
+    - tomcat.sessions.expired
+    - tomcat.sessions.rejected
+    - tomcat.sessions.alive.max
+    - jvm.gc.pause
+    - http.server.requests
