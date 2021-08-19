@@ -1,5 +1,7 @@
 package com.xuxd.kafka.exporter.metrics;
 
+import com.google.common.base.Preconditions;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -26,14 +28,16 @@ public class MetricsHelper {
     }
 
     public static String[] copyLabels(String[] labels) {
-        if (labels == null || labels.length == 0) {
-            throw new IllegalArgumentException("label is null");
-        }
-
+        Preconditions.checkArgument(labels != null && labels.length != 0, "label is null");
         String[] copy = new String[labels.length];
         System.arraycopy(labels, 0, copy, 0, labels.length);
 
         return copy;
+    }
+
+    public static String uniqueID(String name, String[] labels) {
+        Preconditions.checkNotNull(labels);
+        return new StringBuilder(name).append("#").append(Arrays.asList(labels)).toString();
     }
 
 }

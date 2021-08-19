@@ -29,13 +29,14 @@ public class MetricsReporter {
         Preconditions.checkNotNull(labels, "labels is null");
         Preconditions.checkArgument((labels.length & 1) == 0);
 
-        if (gaugeCache.containsKey(name)) {
-            gaugeCache.get(name).set(value);
+        String uniqueID = MetricsHelper.uniqueID(name, labels);
+        if (gaugeCache.containsKey(uniqueID)) {
+            gaugeCache.get(uniqueID).set(value);
         } else {
             AtomicDouble supplier = new AtomicDouble(value);
             Gauge.builder(name, () -> supplier)
                 .tags(Tags.of(labels)).description(MetricsHelper.METRICS_DESCRIPTION_CACHE.get(name)).register(registry);
-            gaugeCache.putIfAbsent(name, supplier);
+            gaugeCache.putIfAbsent(uniqueID, supplier);
         }
 //        registry.gauge(name, Tags.of(labels), value);
     }
