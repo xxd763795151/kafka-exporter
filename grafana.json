@@ -16,8 +16,8 @@
   "editable": true,
   "gnetId": 721,
   "graphTooltip": 0,
-  "id": 4,
-  "iteration": 1629378090246,
+  "id": 13,
+  "iteration": 1629688111541,
   "links": [],
   "panels": [
     {
@@ -1639,7 +1639,7 @@
       },
       "yaxes": [
         {
-          "format": "short",
+          "format": "decbytes",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -4417,8 +4417,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "press",
-          "value": "press"
+          "text": "test",
+          "value": "test"
         },
         "datasource": "Prometheus",
         "definition": "label_values(env)",
@@ -4443,7 +4443,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "All"
           ],
@@ -4474,7 +4474,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "All"
           ],
@@ -4505,7 +4505,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "All"
           ],
@@ -4563,7 +4563,7 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -4593,5 +4593,5 @@
   "timezone": "browser",
   "title": "kafka",
   "uid": "qu-QZdfZz",
-  "version": 22
+  "version": 2
 }
