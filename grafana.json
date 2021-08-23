@@ -17,7 +17,7 @@
   "gnetId": 721,
   "graphTooltip": 0,
   "id": 13,
-  "iteration": 1629688111541,
+  "iteration": 1629705086198,
   "links": [],
   "panels": [
     {
@@ -2081,7 +2081,7 @@
       },
       "yaxes": [
         {
-          "format": "short",
+          "format": "none",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -2180,7 +2180,7 @@
       },
       "yaxes": [
         {
-          "format": "short",
+          "format": "none",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -4593,5 +4593,5 @@
   "timezone": "browser",
   "title": "kafka",
   "uid": "qu-QZdfZz",
-  "version": 2
+  "version": 3
 }
