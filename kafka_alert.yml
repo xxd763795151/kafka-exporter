@@ -73,3 +73,19 @@ groups:
         annotations:
           description: '{{$labels.env}} 集群出现消息积压，消费组：{{$labels.groupId}}，topic：{{$labels.topic}}，当前积压值：{{$value}}'
           summary: '{{$labels.env}} 集群出现消息积压'
+      - alert: "kafka集群网络处理繁忙"
+        expr: kafka_network_socketserver_networkprocessoravgidlepercent{env="test"} < 0.3
+        for: 0s
+        labels:
+          severity: warning
+        annotations:
+          description: '{{$labels.env}} 集群网络线程池不太空闲，可能网络处理压力太大，主机：{{$labels.instance}}，当前空闲值：{{$value}}'
+          summary: '{{$labels.env}} 集群网络处理繁忙'
+      - alert: "kafka集群IO处理繁忙"
+        expr: kafka_server_kafkarequesthandlerpool_requesthandleravgidlepercent_total{env="test"} < 0.3
+        for: 0s
+        labels:
+          severity: warning
+        annotations:
+          description: '{{$labels.env}} 集群IO线程池不太空闲，可能处理压力太大，需要调整线程数，主机：{{$labels.instance}}，当前空闲值：{{$value}}'
+          summary: '{{$labels.env}} 集群IO处理繁忙'
