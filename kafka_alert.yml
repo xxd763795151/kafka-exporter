@@ -1,0 +1,75 @@
+groups:
+  - name: Kafka测试集群告警
+    rules:
+      - alert: "kafka集群，出现脑裂"
+        expr: sum(kafka_controller_kafkacontroller_activecontrollercount{env="test"}) by (env) > 1
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          description: '激活状态的控制器数量为{{$value}}，集群可能出现脑裂'
+          summary: '{{$labels.env}} 集群出现脑裂，请检查集群之前的网络'
+      - alert: "kafka集群没有活跃的控制器"
+        expr: sum(kafka_controller_kafkacontroller_activecontrollercount{env="test"}) by (env) < 1
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          description: '激活状态的控制器数量为{{$value}}，没有活跃的控制器'
+          summary: '{{$labels.env}} 集群没有活跃的控制器，集群可能无法正常管理'
+      - alert: "kafka节点挂了"
+        expr: count(kafka_server_replicamanager_leadercount{env="test"}) by (env) < 3
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          description: '{{$labels.env}} 集群的节点挂了，当前可用节点：{{$value}}'
+          summary: '{{$labels.env}} 集群的节点挂了'
+      - alert: "kafka集群出现leader不在首选副本上的分区"
+        expr: sum(kafka_controller_kafkacontroller_preferredreplicaimbalancecount{env="test"}) by (env) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: '{{$labels.env}} 集群出现leader不在首选副本上的分区，数量：{{$value}}'
+          summary: '{{$labels.env}} 集群出现leader不在首选副本上的分区，分区副本负载不均衡，考虑使用kafka-preferred-replica-election脚本校正'
+      - alert: "kafka集群离线分区数量大于0"
+        expr: sum(kafka_controller_kafkacontroller_offlinepartitionscount{env="test"}) by (env) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          description: '{{$labels.env}} 集群离线分区数量大于0，数量：{{$value}}'
+          summary: '{{$labels.env}} 集群离线分区数量大于0'
+      - alert: "kafka集群未保持同步的分区数大于0"
+        expr: sum(kafka_server_replicamanager_underreplicatedpartitions{env="test"}) by (env) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          description: '{{$labels.env}} 集群未保持同步的分区数大于0，数量：{{$value}}'
+          summary: '{{$labels.env}} 集群未保持同步的分区数大于0，可能丢失消息'
+      - alert: "kafka节点所在主机的CPU使用率过高"
+        expr: irate(process_cpu_seconds_total{env="test"}[5m])*100 > 50
+        for: 10s
+        labels:
+          severity: warning
+        annotations:
+          description: '{{$labels.env}} 集群CPU使用率过高，主机：{{$labels.instance}}，当前CPU使用率：{{$value}}'
+          summary: '{{$labels.env}} 集群CPU使用率过高'
+      - alert: "kafka节点YCG太频繁"
+        expr: jvm_gc_collection_seconds_count{env="test", gc=~'.*Young.*'} - jvm_gc_collection_seconds_count{env="test", gc=~'.*Young.*'} offset 1m > 30
+        for: 0s
+        labels:
+          severity: warning
+        annotations:
+          description: '{{$labels.env}} 集群节点YCG太频繁，主机：{{$labels.instance}}，最近1分钟YGC次数：{{$value}}'
+          summary: '{{$labels.env}} 集群节点YCG太频繁'
+      - alert: "kafka集群消息积压告警"
+        expr: sum(consumer_lag{env="test"}) by (groupId, topic, env) > 20000
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          description: '{{$labels.env}} 集群出现消息积压，消费组：{{$labels.groupId}}，topic：{{$labels.topic}}，当前积压值：{{$value}}'
+          summary: '{{$labels.env}} 集群出现消息积压'
