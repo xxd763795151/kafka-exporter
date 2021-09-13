@@ -10,7 +10,7 @@ import org.apache.kafka.common.TopicPartition;
  * @author xuxd
  * @date 2021-08-19 11:33:08
  **/
-public interface KafkaAdminService {
+public interface KafkaConsumerService {
 
     List<String> getGroupList();
 

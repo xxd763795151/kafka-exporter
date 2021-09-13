@@ -1,7 +1,8 @@
 package com.xuxd.kafka.exporter.service.impl;
 
 import com.xuxd.kafka.exporter.config.KafkaConfig;
-import com.xuxd.kafka.exporter.service.KafkaAdminService;
+import com.xuxd.kafka.exporter.service.AbstractKafkaService;
+import com.xuxd.kafka.exporter.service.KafkaConsumerService;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
@@ -32,18 +32,18 @@ import org.springframework.stereotype.Service;
  **/
 @Service
 @Slf4j
-public class KafkaAdminServiceImpl implements KafkaAdminService {
+public class KafkaConsumerServiceImpl extends AbstractKafkaService implements KafkaConsumerService {
 
     private final KafkaConfig kafkaConfig;
 
     private final AdminClient adminClient;
 
-    public KafkaAdminServiceImpl(KafkaConfig kafkaConfig) {
+    public KafkaConsumerServiceImpl(KafkaConfig kafkaConfig) {
+        super(kafkaConfig);
         this.kafkaConfig = kafkaConfig;
-        Properties props = new Properties();
-
-        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootServer());
+        Properties props = getProperties();
         props.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, kafkaConfig.getRequestTimeoutMs());
+
         adminClient = AdminClient.create(props);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> adminClient.close()));
@@ -65,8 +65,7 @@ public class KafkaAdminServiceImpl implements KafkaAdminService {
         try {
             Map<TopicPartition, OffsetAndMetadata> consumeOffsetMap = consumerGroupOffsets.partitionsToOffsetAndMetadata().get(3, TimeUnit.SECONDS);
 
-            Properties props = new Properties();
-            props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootServer());
+            Properties props = getProperties();
             props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
             props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
             props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());

@@ -19,4 +19,11 @@ public class KafkaConfig {
 
     private int requestTimeoutMs;
 
+    private String securityProtocol;
+
+    private String saslMechanism;
+
+    private String saslJaasConfig;
+
+    private boolean enableAcl;
 }
