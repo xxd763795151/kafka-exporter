@@ -34,8 +34,7 @@ public class CollectTask {
         log.info("start collect consumer info");
         long startTime = System.currentTimeMillis();
 
-        consumerService.getGroupList().stream().forEach(groupId-> {
-
+        for (String groupId : consumerService.getGroupList()) {
             Map<TopicPartition, Long> consumerLag = consumerService.getConsumerLag(groupId);
 
             consumerLag.forEach((partition, lag) -> {
@@ -45,7 +44,7 @@ public class CollectTask {
                 MetricsHelper.updateLabelValue(labels, "groupId", groupId);
                 metricsReporter.reportGauge(ConsumerMetrics.CONSUMER_LAG.getName(), labels, Double.valueOf(lag));
             });
-        });
+        }
 
         log.info("end collect consumer info, cost time: {}", System.currentTimeMillis() - startTime);
     }
