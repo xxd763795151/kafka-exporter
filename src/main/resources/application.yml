@@ -32,7 +32,7 @@ kafka:
   boot-server: localhost:9092
   request-timeout-ms: 3000
   # 服务端是否启用acl了，如果不启用，下面的几项都忽略即可
-  enable-acl: true
+  enable-acl: false
   security-protocol: SASL_PLAINTEXT
   sasl-mechanism: SCRAM-SHA-256
   sasl-jaas-config: org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin";
