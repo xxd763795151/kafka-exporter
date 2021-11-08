@@ -16,7 +16,8 @@ package com.xuxd.kafka.exporter.collect;
 import com.xuxd.kafka.exporter.metrics.ConsumerMetrics;
 import com.xuxd.kafka.exporter.metrics.MetricsHelper;
 import com.xuxd.kafka.exporter.metrics.MetricsReporter;
-import com.xuxd.kafka.exporter.service.KafkaConsumerService;
+import com.xuxd.kafka.exporter.service.ConsumerService;
+import com.xuxd.kafka.exporter.service.TopicService;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.TopicPartition;
@@ -33,11 +34,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class CollectTask {
 
-    private final KafkaConsumerService consumerService;
+    private final TopicService topicService;
+
+    private final ConsumerService consumerService;
 
     private final MetricsReporter metricsReporter;
 
-    public CollectTask(final KafkaConsumerService consumerService, final MetricsReporter metricsReporter) {
+    public CollectTask(final TopicService topicService, final ConsumerService consumerService,
+        final MetricsReporter metricsReporter) {
+        this.topicService = topicService;
         this.consumerService = consumerService;
         this.metricsReporter = metricsReporter;
     }
@@ -47,13 +52,17 @@ public class CollectTask {
         log.info("start collect consumer info");
         long startTime = System.currentTimeMillis();
 
-        for (String groupId : consumerService.getGroupList()) {
-            Map<TopicPartition, Long> consumerLag = consumerService.getConsumerLag(groupId);
+        Map<TopicPartition, Long> endOffsetMap = topicService.getEndOffset(null);
 
-            consumerLag.forEach((partition, lag) -> {
+        for (String groupId : consumerService.getGroupList()) {
+
+            Map<TopicPartition, Long> committedOffsetMap = consumerService.getCommittedOffset(groupId);
+            committedOffsetMap.forEach((topicPartition, committedOffset) -> {
+                long endOffset = endOffsetMap.get(topicPartition);
+                long lag = endOffset - committedOffset;
                 String[] labels = ConsumerMetrics.CONSUMER_LAG.getLabels();
-                MetricsHelper.updateLabelValue(labels, "topic", partition.topic());
-                MetricsHelper.updateLabelValue(labels, "partition", String.valueOf(partition.partition()));
+                MetricsHelper.updateLabelValue(labels, "topic", topicPartition.topic());
+                MetricsHelper.updateLabelValue(labels, "partition", String.valueOf(topicPartition.partition()));
                 MetricsHelper.updateLabelValue(labels, "groupId", groupId);
                 metricsReporter.reportGauge(ConsumerMetrics.CONSUMER_LAG.getName(), labels, Double.valueOf(lag));
             });

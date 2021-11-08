@@ -15,7 +15,8 @@ package com.xuxd.kafka.exporter.service.impl;
 
 import com.xuxd.kafka.exporter.config.KafkaConfig;
 import com.xuxd.kafka.exporter.service.AbstractKafkaService;
-import com.xuxd.kafka.exporter.service.KafkaConsumerService;
+import com.xuxd.kafka.exporter.service.ConsumerService;
+import com.xuxd.kafka.exporter.service.common.KafkaClientHolder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
+import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsOptions;
 import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
 import org.apache.kafka.clients.admin.ListConsumerGroupsResult;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -45,21 +46,13 @@ import org.springframework.stereotype.Service;
  **/
 @Service
 @Slf4j
-public class KafkaConsumerServiceImpl extends AbstractKafkaService implements KafkaConsumerService {
-
-    private final KafkaConfig kafkaConfig;
+public class ConsumerServiceImpl extends AbstractKafkaService implements ConsumerService {
 
     private final AdminClient adminClient;
 
-    public KafkaConsumerServiceImpl(KafkaConfig kafkaConfig) {
+    public ConsumerServiceImpl(KafkaConfig kafkaConfig, KafkaClientHolder clientHolder) {
         super(kafkaConfig);
-        this.kafkaConfig = kafkaConfig;
-        Properties props = getProperties();
-        props.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, kafkaConfig.getRequestTimeoutMs());
-
-        adminClient = AdminClient.create(props);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> adminClient.close()));
+        this.adminClient = clientHolder.getAdminClient();
     }
 
     @Override public List<String> getGroupList() {
@@ -102,5 +95,20 @@ public class KafkaConsumerServiceImpl extends AbstractKafkaService implements Ka
         }
 
         return Collections.emptyMap();
+    }
+
+    @Override public Map<TopicPartition, Long> getCommittedOffset(String groupId) {
+        Map<TopicPartition, Long> res = new HashMap<>();
+
+        try {
+            Map<TopicPartition, OffsetAndMetadata> offsetAndMetadataMap = adminClient
+                .listConsumerGroupOffsets(groupId, timeoutMs(new ListConsumerGroupOffsetsOptions())).partitionsToOffsetAndMetadata().get();
+            offsetAndMetadataMap.forEach((t, o) -> res.put(t, o.offset()));
+        } catch (Exception e) {
+            log.error("listConsumerGroupOffsets error", e);
+            return Collections.emptyMap();
+        }
+
+        return res;
     }
 }

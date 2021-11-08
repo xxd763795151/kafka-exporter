@@ -23,9 +23,11 @@ import org.apache.kafka.common.TopicPartition;
  * @author xuxd
  * @date 2021-08-19 11:33:08
  **/
-public interface KafkaConsumerService {
+public interface ConsumerService {
 
     List<String> getGroupList();
 
     Map<TopicPartition, Long> getConsumerLag(String groupId);
+
+    Map<TopicPartition, Long> getCommittedOffset(String groupId);
 }
