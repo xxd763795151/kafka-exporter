@@ -60,11 +60,21 @@ public class CollectTask {
             committedOffsetMap.forEach((topicPartition, committedOffset) -> {
                 long endOffset = endOffsetMap.get(topicPartition);
                 long lag = endOffset - committedOffset;
+                // 上报消费积压信息
                 String[] labels = ConsumerMetrics.CONSUMER_LAG.getLabels();
                 MetricsHelper.updateLabelValue(labels, "topic", topicPartition.topic());
                 MetricsHelper.updateLabelValue(labels, "partition", String.valueOf(topicPartition.partition()));
                 MetricsHelper.updateLabelValue(labels, "groupId", groupId);
                 metricsReporter.reportGauge(ConsumerMetrics.CONSUMER_LAG.getName(), labels, Double.valueOf(lag));
+
+                // 上报消费位点，采集消费位点是为了变相的计算消费端的tps，因为目前还不能直接获取消费端的消费tps相关指标
+                // 所以通过间接的方式，根据消费位点的增长速率来计算消费端的消费tps，如果出现消费tps猛增的话（可能是积压太多，突然消费，如果出现读取历史数据），可以考虑及时预警，作相关处理
+                // 消费位点不能使用Counter类型，因为可以重置，所以不能保证一定是时刻增长
+                labels = ConsumerMetrics.CONSUMER_OFFSET.getLabels();
+                MetricsHelper.updateLabelValue(labels, "topic", topicPartition.topic());
+                MetricsHelper.updateLabelValue(labels, "partition", String.valueOf(topicPartition.partition()));
+                MetricsHelper.updateLabelValue(labels, "groupId", groupId);
+                metricsReporter.reportGauge(ConsumerMetrics.CONSUMER_OFFSET.getName(), labels, Double.valueOf(committedOffset));
             });
         }
 

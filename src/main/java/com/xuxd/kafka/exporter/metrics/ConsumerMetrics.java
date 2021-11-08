@@ -23,7 +23,9 @@ import lombok.Getter;
  **/
 public enum ConsumerMetrics {
 
-    CONSUMER_LAG("consumer-lag", "consumer lag", "topic", "", "partition", "", "groupId", "");
+    CONSUMER_LAG("consumer-lag", "consumer lag", "topic", "", "partition", "", "groupId", ""),
+
+    CONSUMER_OFFSET("consumer-offset", "consumer committed offset", "topic", "", "partition", "", "groupId", "");
 
     @Getter
     private String name;
