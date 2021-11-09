@@ -68,7 +68,8 @@ public class CollectTask {
                 metricsReporter.reportGauge(ConsumerMetrics.CONSUMER_LAG.getName(), labels, Double.valueOf(lag));
 
                 // 上报消费位点，采集消费位点是为了变相的计算消费端的tps，因为目前还不能直接获取消费端的消费tps相关指标
-                // 所以通过间接的方式，根据消费位点的增长速率来计算消费端的消费tps，如果出现消费tps猛增的话（可能是积压太多，突然消费，如果出现读取历史数据），可以考虑及时预警，作相关处理
+                // 所以通过间接的方式，计算消费位点的平均增长速率来估算消费端的消费tps，如果出现消费tps猛增的话（可能是积压太多，突然消费，如：出现读取历史数据），可以考虑预警，作相关处理
+                // 不使用rate等增长速率计算方式，因为无法得到负值。取平均估算，如果出现负值，可以认为出现了位点重置操作
                 // 消费位点不能使用Counter类型，因为可以重置，所以不能保证一定是时刻增长
                 labels = ConsumerMetrics.CONSUMER_OFFSET.getLabels();
                 MetricsHelper.updateLabelValue(labels, "topic", topicPartition.topic());
