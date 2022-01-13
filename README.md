@@ -2,9 +2,12 @@
 kafka-exporter 采集kafka相关metric，可以集成prometheus进行监控告警。  
 该kafka-exporter 目前只作为监控指标采集的补充。  
 完整监控、告警搭建操作，查看：https://blog.csdn.net/x763795151/article/details/119705372
+# 下载
+点击下载：[kafka-exporter.tar.gz](https://github.com/xxd763795151/kafka-exporter/releases/download/v1.0.0/kafka-exporter.tar.gz)
 
 # 使用
 ### 打包
+也可以直接下载源码进行打包  
 ```sh package.sh```
 ### 启动
 ```sh bin/start.sh```
