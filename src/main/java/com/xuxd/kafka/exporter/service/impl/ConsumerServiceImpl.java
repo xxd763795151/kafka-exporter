@@ -58,7 +58,9 @@ public class ConsumerServiceImpl extends AbstractKafkaService implements Consume
     @Override public List<String> getGroupList() {
         ListConsumerGroupsResult result = adminClient.listConsumerGroups();
         try {
-            return result.all().get().stream().filter(c -> c.state().isPresent() && c.state().get() != ConsumerGroupState.DEAD)
+//            return result.all().get().stream().filter(c -> c.state().isPresent() && c.state().get() != ConsumerGroupState.DEAD)
+//                .map(ConsumerGroupListing::groupId).collect(Collectors.toList());
+            return result.all().get().stream()
                 .map(ConsumerGroupListing::groupId).collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getGroupList error", e);
