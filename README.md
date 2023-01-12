@@ -5,6 +5,33 @@ kafka-exporter 采集kafka相关metric，可以集成prometheus进行监控告�
 # 下载
 点击下载：[kafka-exporter.tar.gz](https://github.com/xxd763795151/kafka-exporter/releases/download/v1.0.0/kafka-exporter.tar.gz)
 
+# 一个prometheus配置多个kafka集群
+job_name的值不一定必须是kafka，如果是其它值，比如增加一个job标签，它的是值必须是kafka，如下：
+```
+  - job_name: 'kafka'
+    metrics_path: /metrics
+    static_configs:
+    - targets: ['localhost:9099']
+      labels:
+         env: "默认"
+         
+  - job_name: 'kafka-test'
+    metrics_path: /metrics
+    static_configs:
+    - targets: ['localhost:9097']
+      labels:
+         env: "测试"
+         job: "kafka"
+         
+  - job_name: 'kafka-dev'
+    metrics_path: /metrics
+    static_configs:
+    - targets: ['localhost:9095']
+      labels:
+         env: "开发"
+         job: "kafka"
+```
+
 # 使用
 ### 打包
 也可以直接下载源码进行打包  
