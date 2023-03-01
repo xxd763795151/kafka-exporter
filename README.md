@@ -46,14 +46,14 @@ job_name的值不一定必须是kafka，如果是其它值，比如增加一个j
 ```
 kafka:
   boot-server: localhost:9092
-```  
+```
 
 ### 访问
 http://localhost:9097/prometheus
 
 # 说明
 目前只采集了消息积压信息，其它指标监控配置以及该exporter的具体使用看这里：https://blog.csdn.net/x763795151/article/details/119705372
-  
+
 因为从broker的jmx无法拿到积压信息，所以单写了一个exporter，如有其它指标，后续再补充
 ## 采集指标
 * 消费积压信息  
@@ -62,4 +62,5 @@ http://localhost:9097/prometheus
 在工程的根目录下存在kafka_broker.yml、kafka_alert.yml...等配置文件
 * kafka_broker.yml: jmx_exporter的配置文件  
 * kafka_alert.yml: prometheus关于kafka的告警配置文件  
-* grafana.json: grafana监控面板配置文件  
+* grafana-select-datasource.json: grafana监控面板配置文件  
+
